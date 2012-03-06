@@ -43,7 +43,7 @@ public class ContactManager {
     /**
      * Custom IM protocol used when storing status messages.
      */
-    public static final String CUSTOM_IM_PROTOCOL = "SampleSyncAdapter";
+    public static final String CUSTOM_IM_PROTOCOL = "SynContacts";
     private static final String TAG = "ContactManager";
 
     /**
@@ -123,6 +123,7 @@ public class ContactManager {
                 values.put(StatusUpdates.STATUS, status.getStatus());
                 values.put(StatusUpdates.PROTOCOL, Im.PROTOCOL_CUSTOM);
                 values.put(StatusUpdates.CUSTOM_PROTOCOL, CUSTOM_IM_PROTOCOL);
+                values.put(StatusUpdates.PRESENCE, StatusUpdates.AWAY);
                 values.put(StatusUpdates.IM_ACCOUNT, username);
                 values.put(StatusUpdates.IM_HANDLE, status.getUserId());
                 values.put(StatusUpdates.STATUS_RES_PACKAGE, context
@@ -321,8 +322,8 @@ public class ContactManager {
         public final static int COLUMN_ID = 0;
 
         public static final String SELECTION =
-            Data.MIMETYPE + "='" + SampleSyncAdapterColumns.MIME_PROFILE
-                + "' AND " + SampleSyncAdapterColumns.DATA_PID + "=?";
+            Data.MIMETYPE + "='" + SyncAdapterColumns.MIME_PROFILE
+                + "' AND " + SyncAdapterColumns.DATA_PID + "=?";
     }
     /**
      * Constants for a query to find a contact given a sample SyncAdapter user

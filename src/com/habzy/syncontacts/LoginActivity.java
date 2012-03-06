@@ -37,9 +37,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements
     
     private AccountManager mAccountManager;
     
-    /** Was the original caller asking for an entirely new account? */
-    protected boolean mRequestNewAccount = false;
-    
     private String mAuthtokenType;
     
     /** Called when the activity is first created. */
@@ -61,7 +58,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements
         
         mPasswordEt = (EditText) findViewById(R.id.password);
         
-        mRequestNewAccount = (intent.getStringExtra(PARAM_USERNAME) == null);
         
         mConfirmBt.setOnClickListener(this);
         mCancelBt.setOnClickListener(this);
@@ -86,35 +82,34 @@ public class LoginActivity extends AccountAuthenticatorActivity implements
                         Log.i(TAG, "============confirm()--");
                         final Account account = new Account(userName,
                                 Constants.ACCOUNT_TYPE);
-                        if (mRequestNewAccount)
-                        {
-                            mAccountManager.addAccountExplicitly(account,
-                                    passWord,
-                                    null);
-                            // Set contacts sync for this account.
-                            ContentResolver.setSyncAutomatically(account,
-                                    ContactsContract.AUTHORITY,
-                                    true);
-                        }
-                        else
+                        if (!mAccountManager.addAccountExplicitly(account,
+                                passWord,
+                                null))
                         {
                             mAccountManager.setPassword(account, passWord);
                         }
-                        
-                        final Intent intent = new Intent();
-                        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME,
-                                userName);
-                        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE,
-                                Constants.ACCOUNT_TYPE);
-                        setAccountAuthenticatorResult(intent.getExtras());
-                        if (mAuthtokenType != null
-                                && mAuthtokenType.equals(Constants.AUTHTOKEN_TYPE))
+                        else
                         {
-                            intent.putExtra(AccountManager.KEY_AUTHTOKEN,
-                                    passWord);
+                            
+                            final Intent intent = new Intent();
+                            intent.putExtra(AccountManager.KEY_ACCOUNT_NAME,
+                                    userName);
+                            intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE,
+                                    Constants.ACCOUNT_TYPE);
+                            if (mAuthtokenType != null
+                                    && mAuthtokenType.equals(Constants.AUTHTOKEN_TYPE))
+                            {
+                                intent.putExtra(AccountManager.KEY_AUTHTOKEN,
+                                        passWord);
+                            }
+                            setAccountAuthenticatorResult(intent.getExtras());
+                            setResult(RESULT_OK, intent);
                         }
-                        setAccountAuthenticatorResult(intent.getExtras());
-                        setResult(RESULT_OK, intent);
+                       
+                        // Set contacts sync for this account.
+                        ContentResolver.setSyncAutomatically(account,
+                                ContactsContract.AUTHORITY,
+                                true);
                         finish();
                         
                     };

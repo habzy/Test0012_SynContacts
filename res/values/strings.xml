@@ -3,7 +3,7 @@
     <string name="app_name">SynContacts</string>
      <string name="daMei">DaNiMei</string>
       <string
-        name="profile_action">Sample profile</string>
+        name="profile_action">Watch profile</string>
     <string
         name="view_profile">View Profile</string>
 </resources>
