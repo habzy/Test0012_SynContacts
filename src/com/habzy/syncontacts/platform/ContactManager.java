@@ -55,29 +55,34 @@ public class ContactManager {
      */
     public static synchronized void syncContacts(Context context,
         String account, List<User> users) {
+        Log.e(TAG, "==========syncContacts");
         long userId;
         long rawContactId = 0;
         final ContentResolver resolver = context.getContentResolver();
         final BatchOperation batchOperation =
             new BatchOperation(context, resolver);
-        Log.d(TAG, "In SyncContacts");
+        int i = 1;
         for (final User user : users) {
             userId = user.getUserId();
+            Log.e(TAG, "==========i="+i+"userId:"+userId);
             // Check to see if the contact needs to be inserted or updated
             rawContactId = lookupRawContact(resolver, userId);
             if (rawContactId != 0) {
                 if (!user.isDeleted()) {
                     // update contact
+                    Log.e(TAG, "==========updateContact");
                     updateContact(context, resolver, account, user,
                         rawContactId, batchOperation);
                 } else {
+                    Log.e(TAG, "==========deleteContact");
                     // delete contact
                     deleteContact(context, rawContactId, batchOperation);
                 }
             } else {
                 // add new contact
-                Log.d(TAG, "In addContact");
+                Log.e(TAG, "In addContact");
                 if (!user.isDeleted()) {
+                    Log.e(TAG, "==========addContact");
                     addContact(context, account, user, batchOperation);
                 }
             }
@@ -99,10 +104,12 @@ public class ContactManager {
      */
     public static void insertStatuses(Context context, String username,
         List<User.Status> list) {
+        Log.e(TAG, "=======insertStatuses");
         final ContentValues values = new ContentValues();
         final ContentResolver resolver = context.getContentResolver();
         final BatchOperation batchOperation =
             new BatchOperation(context, resolver);
+        int i = 1;
         for (final User.Status status : list) {
             // Look up the user's sample SyncAdapter data row
             final long userId = status.getUserId();
@@ -110,6 +117,8 @@ public class ContactManager {
 
             // Insert the activity into the stream
             if (profileId > 0) {
+                Log.e(TAG, "==========i="+i+"status:"+status.getStatus());
+                
                 values.put(StatusUpdates.DATA_ID, profileId);
                 values.put(StatusUpdates.STATUS, status.getStatus());
                 values.put(StatusUpdates.PROTOCOL, Im.PROTOCOL_CUSTOM);
@@ -346,7 +355,7 @@ public class ContactManager {
         public static final int COLUMN_PHONE_NUMBER = COLUMN_DATA1;
         public static final int COLUMN_PHONE_TYPE = COLUMN_DATA2;
         public static final int COLUMN_EMAIL_ADDRESS = COLUMN_DATA1;
-        public static final int COLUMN_EMAIL_TYPE = COLUMN_DATA2;
+//        public static final int COLUMN_EMAIL_TYPE = COLUMN_DATA2;
         public static final int COLUMN_GIVEN_NAME = COLUMN_DATA2;
         public static final int COLUMN_FAMILY_NAME = COLUMN_DATA3;
 

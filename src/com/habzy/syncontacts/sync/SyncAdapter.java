@@ -53,6 +53,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     
     private Date mLastUpdated;
     
+    private int mFakeUserId = 133;
+    
     public SyncAdapter(Context context, boolean autoInitialize)
     {
         super(context, autoInitialize);
@@ -60,12 +62,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
         mAccountManager = AccountManager.get(context);
     }
     
+    private User getFakeUser()
+    {
+        User fakeUser = new User("Fake Nmae","Fake","Name","12345",null,null,"fake@gmial.com",false ,mFakeUserId);
+        return fakeUser;
+    }
+    
+    private Status getFakeStatus()
+    {
+        return new User.Status(mFakeUserId, "fake online");
+    }
+
+
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
             ContentProviderClient provider, SyncResult syncResult)
     {
         
-        Log.d(TAG, "onPerformSync");
+        Log.e(TAG, "=======onPerformSync==account.name:"+account.name);
         
         List<User> users;
         List<Status> statuses;
@@ -76,20 +90,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             authtoken = mAccountManager.blockingGetAuthToken(account,
                     Constants.AUTHTOKEN_TYPE,
                     true /* notifyAuthFailure */);
-            // fetch updates from the sample service over the cloud
+            ////TODO -  fetch updates from the service
             // users = NetworkUtilities.fetchFriendUpdates(account,
             // authtoken,
             // mLastUpdated);
             users = new ArrayList<User>();
+            users.add(getFakeUser());
             // update the last synced date.
             mLastUpdated = new Date();
             // update platform contacts.
             Log.d(TAG, "Calling contactManager's sync contacts");
             ContactManager.syncContacts(mContext, account.name, users);
-            // fetch and update status messages for all the synced users.
+            //TODO - fetch and update status messages for all the synced users.
             // statuses = NetworkUtilities.fetchFriendStatuses(account,
             // authtoken);
             statuses = new ArrayList<User.Status>();
+            statuses.add(getFakeStatus());
             ContactManager.insertStatuses(mContext, account.name, statuses);
         }
         catch (final AuthenticatorException e)
