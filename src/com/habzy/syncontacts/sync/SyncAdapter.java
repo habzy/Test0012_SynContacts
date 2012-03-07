@@ -64,13 +64,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
     
     private User getFakeUser()
     {
-        User fakeUser = new User("Fake Nmae","Fake","Name","12345",null,null,"fake@gmial.com",false ,mFakeUserId);
+        User fakeUser = new User("Fake Nmae","Fake","Name","1234567",null,null,"fake@gmial.com",false ,mFakeUserId);
+        return fakeUser;
+    }
+    
+    private User getFakeUser2()
+    {
+        User fakeUser = new User("Fake2 Nmae","Fake2","Name","5555555",null,null,"fake2@gmial.com",false ,mFakeUserId+1);
         return fakeUser;
     }
     
     private Status getFakeStatus()
     {
         return new User.Status(mFakeUserId, "fake online");
+    }
+    
+    private Status getFake2Status()
+    {
+        return new User.Status(mFakeUserId+1, "xx is xx");
     }
 
 
@@ -96,16 +107,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter
             // mLastUpdated);
             users = new ArrayList<User>();
             users.add(getFakeUser());
+            users.add(getFakeUser2());
             // update the last synced date.
             mLastUpdated = new Date();
             // update platform contacts.
             Log.d(TAG, "Calling contactManager's sync contacts");
-            ContactManager.syncContacts(mContext, account.name, users);
+            ContactManager.syncContacts(mContext, account, users);
             //TODO - fetch and update status messages for all the synced users.
             // statuses = NetworkUtilities.fetchFriendStatuses(account,
             // authtoken);
             statuses = new ArrayList<User.Status>();
             statuses.add(getFakeStatus());
+            statuses.add(getFake2Status());
             ContactManager.insertStatuses(mContext, account.name, statuses);
         }
         catch (final AuthenticatorException e)

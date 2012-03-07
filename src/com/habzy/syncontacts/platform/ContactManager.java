@@ -16,6 +16,7 @@
 
 package com.habzy.syncontacts.platform;
 
+import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -50,11 +51,11 @@ public class ContactManager {
      * Synchronize raw contacts
      * 
      * @param context The context of Authenticator Activity
-     * @param account The username for the account
+     * @param account.name The username for the account
      * @param users The list of users
      */
     public static synchronized void syncContacts(Context context,
-        String account, List<User> users) {
+        Account account, List<User> users) {
         Log.e(TAG, "==========syncContacts");
         long userId;
         long rawContactId = 0;
@@ -64,7 +65,7 @@ public class ContactManager {
         int i = 1;
         for (final User user : users) {
             userId = user.getUserId();
-            Log.e(TAG, "==========i="+i+"userId:"+userId);
+            Log.e(TAG, "==========i="+i+",userId:"+userId);
             // Check to see if the contact needs to be inserted or updated
             rawContactId = lookupRawContact(resolver, userId);
             if (rawContactId != 0) {
@@ -117,7 +118,7 @@ public class ContactManager {
 
             // Insert the activity into the stream
             if (profileId > 0) {
-                Log.e(TAG, "==========i="+i+"status:"+status.getStatus());
+                Log.e(TAG, "==========i="+i+",status:"+status.getStatus());
                 
                 values.put(StatusUpdates.DATA_ID, profileId);
                 values.put(StatusUpdates.STATUS, status.getStatus());
@@ -128,7 +129,7 @@ public class ContactManager {
                 values.put(StatusUpdates.IM_HANDLE, status.getUserId());
                 values.put(StatusUpdates.STATUS_RES_PACKAGE, context
                     .getPackageName());
-                values.put(StatusUpdates.STATUS_ICON, R.drawable.icon);
+                values.put(StatusUpdates.STATUS_ICON, R.drawable.ic_launcher);
                 values.put(StatusUpdates.STATUS_LABEL, R.string.app_name);
 
                 batchOperation
@@ -149,15 +150,15 @@ public class ContactManager {
      * Adds a single contact to the platform contacts provider.
      * 
      * @param context the Authenticator Activity context
-     * @param accountName the account the contact belongs to
+     * @param account the account the contact belongs to
      * @param user the sample SyncAdapter User object
      */
-    private static void addContact(Context context, String accountName,
+    private static void addContact(Context context, Account account,
         User user, BatchOperation batchOperation) {
         // Put the data in the contacts provider
         final ContactOperations contactOp =
             ContactOperations.createNewContact(context, user.getUserId(),
-                accountName, batchOperation);
+                account.name, batchOperation);
         contactOp.addName(user.getFirstName(), user.getLastName()).addEmail(
             user.getEmail()).addPhone(user.getCellPhone(), Phone.TYPE_MOBILE)
             .addPhone(user.getHomePhone(), Phone.TYPE_OTHER).addProfileAction(
@@ -169,13 +170,13 @@ public class ContactManager {
      * 
      * @param context the Authenticator Activity context
      * @param resolver the ContentResolver to use
-     * @param accountName the account the contact belongs to
+     * @param account the account the contact belongs to
      * @param user the sample SyncAdapter contact object.
      * @param rawContactId the unique Id for this rawContact in contacts
      *        provider
      */
     private static void updateContact(Context context,
-        ContentResolver resolver, String accountName, User user,
+        ContentResolver resolver, Account account, User user,
         long rawContactId, BatchOperation batchOperation) {
         Uri uri;
         String cellPhone = null;
